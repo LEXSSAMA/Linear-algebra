@@ -1,10 +1,11 @@
 #include <vector>
 #include <stdio.h>
-using namespace std;
-
+#include <iostream>
+#include <string>
+#include <fstream>
 
 template<typename T>
-void printMatrix(vector<vector<T>>& matrix)
+void printMatrix(std::vector<std::vector<T>>& matrix)
 {
     int rowSize    = matrix.size();
     int columnSize = matrix[0].size();
@@ -22,7 +23,7 @@ void printMatrix(vector<vector<T>>& matrix)
 
 //杜尔利特算法
 template<typename T>
-int LU_Factorization( vector<vector<T>>& L , vector<vector<T>> & U)
+int LU_Factorization( std::vector<std::vector<T>>& L , std::vector<std::vector<T>> & U)
 {
     int columnSize = U[0].size();
     int rowSize    = U.size();
@@ -49,19 +50,44 @@ int LU_Factorization( vector<vector<T>>& L , vector<vector<T>> & U)
     }
     return 0;
 }
+template< typename T >
+int inputMatrix(std::vector<std::vector<T>>& matrix)
+{
+    std::ifstream fp;
+    std::string matrixNum;
+    int rowSize = 0;
+    fp.open("./matrix",std::ios::in);
+    while(std::getline(fp,matrixNum))
+    {
+        std::size_t pos = 0;
+        std::size_t endPos = 0;
+        matrix.push_back(std::vector<T>());
+        while((endPos=matrixNum.find(" ",pos)) != std::string::npos)
+        {
+            std::string s = matrixNum.substr(pos,endPos-pos);
+            matrix[rowSize].push_back((T)std::stoi(matrixNum.substr(pos,endPos)));
+            pos = endPos+1;
+        }
+        matrix[rowSize].push_back(std::stoi(matrixNum.substr(pos,matrixNum.length())));
+        rowSize++;
+    }
+
+    fp.close();
+    return 0;
+}
 
 int main()
 {
-    vector< vector<double> > A{ {1.0,2.0,3.0},
-                                {4.0,5.0,6.0},
-                                {7.0,8.0,11.0},
-                              };
+
+    std::vector< std::vector<double>> A;
+    inputMatrix(A);
 
     int rowSize    = A.size();
     int columnSize = A[0].size();
 
-    vector< vector<double> > U(A);
-    vector< vector<double> > L(rowSize,vector<double>(rowSize,0));
+
+    std::vector< std::vector<double> > U(A);
+    std::vector< std::vector<double> > L(rowSize,std::vector<double>(rowSize,0));
 
     LU_Factorization(L,U);
 
